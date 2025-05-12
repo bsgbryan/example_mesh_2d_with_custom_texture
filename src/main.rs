@@ -18,6 +18,7 @@ use bevy::{
   image::Image,
   math::{
     UVec3,
+    Vec2,
     ops,
     // primitives::Circle,
   },
@@ -64,11 +65,16 @@ fn startup(
     RenderAssetUsages::RENDER_WORLD,
   );
 
+  let mut uv_positions = vec![[0.5, 0.5]];
   let mut vertex_positions = vec![[0.0, 0.0, 0.0]];
   let segments = rand::random_range(9..18);
 
   for i in 0..segments {
     let a = i as f32 * PI / (segments as f32 * 0.5);
+
+    let uv = Vec2::from_angle(-a).mul_add(Vec2::splat(0.5), Vec2::splat(0.5));
+    uv_positions.push([uv.x, uv.y]);
+
     let min = rand::random_range(0.8..0.925);
     let max = rand::random_range(1.025..1.2);
     let j = rand::random_range(min..max);
@@ -78,6 +84,7 @@ fn startup(
   }
 
   shape.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertex_positions);
+  shape.insert_attribute(Mesh::ATTRIBUTE_UV_0, uv_positions);
 
   let mut indices = vec![0, 1, segments];
   for i in 2..=segments {
